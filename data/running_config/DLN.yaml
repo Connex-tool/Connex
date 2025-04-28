@@ -1,0 +1,19 @@
+override_config: 
+  current_bridge: "DLN-2024-3-1"
+  chains_to_pair:
+   - "Ethereum"
+   - "Arbitrum"
+   - "Base"
+   - "Optimism"
+  answers_wanted: 1
+  force_proxy: false
+  force_reload: false
+  HYPERPARAMETER_TIME_WINDOW: 7200 
+  HYPERPARAMETER_FEE_RATE: 0.2 
+
+unoverride_args:
+  LLM_api_conf: "xiaohumini-gpt-4o"
+
+override_args:
+  force_proxy: false
+  ext_type: "llm"

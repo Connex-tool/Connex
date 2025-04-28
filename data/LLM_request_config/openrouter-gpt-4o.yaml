@@ -1,0 +1,8 @@
+api:
+  name: "openrouter-gpt-4o"
+  key: "xxxx"
+  endpoint: "https://openrouter.ai/api/v1"
+model:
+  id: "openai/gpt-4o-2024-11-20"
+  temperature: 0.3
+  max_tokens: 4096
