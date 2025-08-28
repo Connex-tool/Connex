@@ -61,13 +61,13 @@ from graphviz import Digraph
 
 class AncestorTree:
     def __init__(self):
-        self.parent = {}  # 存储每个节点的父节点
-        self.rank = {}    # 存储每个节点的秩（用于优化合并操作）
-        self.node_labels = {}  # 存储节点的标签
-        self.nodes = set() # 存储所有节点
+        self.parent = {}  
+        self.rank = {}    
+        self.node_labels = {}  
+        self.nodes = set() 
 
     def _make_set(self, node, node_label = None):
-        """创建一个新的集合（并查集树），初始化节点的父节点为自身，秩为0"""
+        
         if node not in self.parent:
           self.parent[node] = node
           self.rank[node] = 0
@@ -81,7 +81,7 @@ class AncestorTree:
             self.node_labels[p] = str(p)
 
     def add_relation(self, p, q, p_label=None, q_label=None):
-        """指定 p 为 q 的父亲。同时指定节点的标签。"""
+        
         if p == q:
             return
 
@@ -92,16 +92,16 @@ class AncestorTree:
 
         self.set_label(q, q_label)
         
-        self._union(p,q)  # p 作为 q 的父节点
+        self._union(p,q)  
        
     def _find(self, node):
-        """查找节点的根节点，同时进行路径压缩优化"""
+        
         if self.parent[node] != node:
             self.parent[node] = self._find(self.parent[node])
         return self.parent[node]
 
     def _union(self, p, q):
-         """将 p 和 q 的集合合并，使用秩优化"""
+         
          root_p = self._find(p)
          root_q = self._find(q)
          if root_p != root_q:
@@ -137,7 +137,7 @@ class AncestorTree:
 
 
     def get_all_descendants(self, p):
-        """返回所有与节点 p 拥有相同祖先的节点"""
+        
         if p not in self.parent:
             return [p]
 
@@ -146,13 +146,13 @@ class AncestorTree:
         return descendants
 
     def has_common_ancestor(self, p, q):
-        """判断两个节点是否拥有共同的祖先节点"""
+        
         if p not in self.parent or q not in self.parent:
           return False
         return self._find(p) == self._find(q)
 
     def export_to_graphviz(self, filename="graph", format="png"):
-        """将现有的节点和边导出到 graphviz，使用节点的 label 显示"""
+        
         dot = Digraph(comment='The Graph')
 
         for node in self.nodes:
@@ -166,7 +166,7 @@ class AncestorTree:
         dot.render(filename, format=format, cleanup=True)
 
     def to_json(self, filename="ancestortree.json", write_to_file=False):
-        """将树导出为 JSON 文件"""
+        
         data = {
             'parent': {node: str(parent) for node, parent in self.parent.items()},
             'node_labels': self.node_labels,
@@ -180,7 +180,7 @@ class AncestorTree:
             
     @classmethod
     def from_json(cls, filename="ancestortree.json"):
-        """从 JSON 文件恢复树"""
+        
         with open(filename, 'r') as f:
             data = json.load(f)
 
@@ -188,17 +188,17 @@ class AncestorTree:
     
     @classmethod
     def from_data(cls, data):
-        """从 data 恢复树"""
+        
         tree = cls()
         tree.parent = {(node): (parent) for node, parent in data['parent'].items()}
-        tree.rank = data.get('rank',{}) # rank在json中是可选的
+        tree.rank = data.get('rank',{}) 
         tree.node_labels = data['node_labels']
         tree.nodes = set(data['nodes'])
         
         return tree
 
     def get_all_roots(self):
-        """获取所有根节点"""
+        
         roots = set()
         for node in self.nodes:
             roots.add(self._find(node))
@@ -206,7 +206,7 @@ class AncestorTree:
 
 
     def get_parent(self, node):
-         """ 获取节点的父节点 """
+         
          if node not in self.parent or node == self.parent[node]:
             return None
          return self.parent[node]

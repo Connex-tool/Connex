@@ -23,8 +23,8 @@ from easydict import EasyDict as ed
 date_after = '2024-3-1'
 date_before = '2024-3-11'
 # date_after = '2024-3-1'
-timing = 'earliest' # earliest与date_after配合使用，收取某个日期后最早的require条tx。latest收取截止目前最新的require条tx
-tx_num_require = 3000 # 所需tx数量
+timing = 'earliest' 
+tx_num_require = 3000 
 # current_bridge = 'Across' + '-' + date_after
 # current_bridge = 'Stargate' + '-' + date_after
 # current_bridge = 'Portal' + '-' + date_after

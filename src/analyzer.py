@@ -160,8 +160,8 @@ def _get_info_from_two_tx_hash(tx1_hash:str, tx2_hash:str, tx_hash_to_key_info:T
 def generate_FP_plus():
     print('---generate FP_plus begin---')
 
-    # 看下FP中，me vs gt
-    # 关注 time window，fee，fee异常时的amount
+    
+    
     FP = dict()
     with open(C.paths().FP, 'r') as f:
         FP = json.load(f)
@@ -197,7 +197,7 @@ def generate_FP_plus():
 def generate_FN_plus():
     print('---generate FN_plus begin---')
 
-    # 看下FN中，违背了哪些rule
+    
     FN = dict()
     with open(C.paths().FN, 'r') as f:
         FN = json.load(f)
@@ -260,7 +260,7 @@ def generate_FN_plus():
 def generate_TP_plus():
     print('---generate TP_plus begin---')
 
-    # 看下TP
+    
     TP = dict()
     with open(C.paths().TP, 'r') as f:
         TP = json.load(f)
@@ -290,7 +290,7 @@ def generate_TP_plus():
 
 def analyze_FN_plus_token():
     print('---analyze FN_plus token begin---')
-    # 分析FN_plus中，本该匹配但没匹配的token
+    
     FN_plus = dict()
     paired_token:T.List[T.Dict] = []
     
@@ -317,7 +317,7 @@ def analyze_FN_plus_token():
                     'fee_amount': [fee_amount]
                 }
                 
-                is_exist = False  # 去重，不需要传递性
+                is_exist = False  
                 for other_pair in paired_token:
                     t1, t2 = (one_pair['token1'], one_pair['token2'])
                     t3, t4 = (other_pair['token1'], other_pair['token2'])

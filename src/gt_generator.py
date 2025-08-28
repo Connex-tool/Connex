@@ -67,10 +67,10 @@ def generate_gt_from_tx():
             logging.error("extracting tx hash fail:" + tx_hash)
             logging.exception(e)
             continue
-        if len(src_tx_hash) and src_tx_hash in tx_dict: # 查到的src tx hash必须出现在数据集中
+        if len(src_tx_hash) and src_tx_hash in tx_dict: 
             gt[src_tx_hash] = tx_hash
             tx_dict[tx_hash]['matched'] = True
-            tx_dict[src_tx_hash]['matched'] = True # 少一次查gt
+            tx_dict[src_tx_hash]['matched'] = True 
         
     print('load {tx} tx, generate {gt} gt'.format(
         tx=len(tx_dict),
@@ -116,10 +116,10 @@ def generate_gt_from_api():
             logging.error("fetching tx hash fail:" + tx_hash)
             logging.exception(e)
             continue
-        if dst_tx_hash in tx_dict: # dst tx必须出现在数据集中
+        if dst_tx_hash in tx_dict: 
             gt[tx_hash] = dst_tx_hash
             tx_dict[tx_hash]['matched'] = True
-            tx_dict[dst_tx_hash]['matched'] = True # 少一次查gt
+            tx_dict[dst_tx_hash]['matched'] = True 
         
     print('load {tx} tx, generate {gt} gt'.format(
         tx=len(tx_dict),

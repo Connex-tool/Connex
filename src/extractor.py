@@ -75,8 +75,8 @@ class ExtractorLLM(Extractor):
     def _get_dependable_meta_structure(self, chain:str, trx:dict, logs,)->str:
         meta_structure = _get_meta_structure(trx, logs, True, self.meta_structures[chain]['ignore'])
         if meta_structure not in self.meta_structures[chain]['keys']: 
-            # 如果不在之前选定的记录中，就选择它的祖先。
-            # TODO: 后续变成LLM选择
+            
+            
             meta_structure = self.meta_structures[chain]['tree'].get_ancestor(meta_structure)
         if self._meta_structure_should_drop(meta_structure): 
             return ""
@@ -132,7 +132,7 @@ class ExtractorLLM(Extractor):
             try: return _go(chosen_keys)
             except: continue
 
-        # 从邻近的meta_structure里选一个
+        
         for other_chain in self.final_chosen_keys:
             if meta_structure in self.final_chosen_keys[other_chain][role]:
                 other_keys = self.final_chosen_keys[other_chain][role][meta_structure]
@@ -143,7 +143,7 @@ class ExtractorLLM(Extractor):
                 except: 
                     continue
         for other_meta_structure in self.final_chosen_keys[chain][role]:
-            if other_meta_structure in all_descendants: continue # 上面已经检查过这个集合
+            if other_meta_structure in all_descendants: continue 
             other_keys = self.final_chosen_keys[chain][role][other_meta_structure]
             if not other_keys: continue
             try: 
@@ -300,7 +300,7 @@ class ExtractorLLM(Extractor):
                 if not len(tx_instance[0]): continue
                 tx_hash = tx_instance[0]['hash'].lower()
                 # if tx_hash not in gt_of_chain: continue
-                # 这个循环用于统计单个log的出现次数
+                
                 meta_struct:list = _get_meta_structure(tx_instance[0], tx_instance[1:])
                 for ms in meta_struct: flatten_keys_cnt[ms] += 1
             metas_relation_tree = AncestorTree()
@@ -309,11 +309,11 @@ class ExtractorLLM(Extractor):
                 if not len(tx_instance[0]): continue
                 tx_hash = tx_instance[0]['hash'].lower()
                 # if tx_hash not in gt_of_chain: continue
-                # 过一遍数据，统计每个meta_structure的个数。 这里分原始的和经过分组的
+                
                 meta_struct:list = _get_meta_structure(tx_instance[0], tx_instance[1:], False, flatten_keys_ignore)
                 meta_struct_str = ';'.join(m for m in meta_struct)
                 metas_cnt_orig[meta_struct_str] += 1 
-                # metas_cnt[meta_struct_str] += 1 # 如果用了ancestor，则这里不能加
+                
                 meta_struct_set = set(meta_struct)
                 if meta_struct_str in metas_str2sets: continue
                 metas_str2sets[meta_struct_str] = meta_struct_set
@@ -322,7 +322,7 @@ class ExtractorLLM(Extractor):
                     if meta_struct_str == _pre_str: continue
                     if meta_struct_set == _pre_sets: continue 
                     if meta_struct_set.issubset(_pre_sets): 
-                        # A 是 B 的子集，证明A是B的祖先
+                        
                         metas_relation_tree.add_relation(meta_struct_str, _pre_str, metas_cnt_orig[meta_struct_str], metas_cnt_orig[_pre_str])
                     elif _pre_sets.issubset(meta_struct_set):
                         metas_relation_tree.add_relation(_pre_str, meta_struct_str, metas_cnt_orig[_pre_str],metas_cnt_orig[meta_struct_str])
@@ -331,7 +331,7 @@ class ExtractorLLM(Extractor):
                 if not len(tx_instance[0]): continue
                 tx_hash = tx_instance[0]['hash'].lower()
                 # if tx_hash not in gt_of_chain: continue
-                # 如果使用了ancestor，则这个循环用于统计ancestor的出现次数(后代算在ancestor头上)
+                
                 meta_struct:list = _get_meta_structure(tx_instance[0], tx_instance[1:], False, flatten_keys_ignore)
                 meta_struct_str = ';'.join(m for m in meta_struct)
                 metas_cnt[meta_struct_str] += 1
@@ -692,15 +692,15 @@ class ExtractorLLM(Extractor):
                 tx_instance = new_bridge_data[chain][role][meta_structure][tx_hash]
                 map_of_values = { k:[] for k in C.PRESET_KEYS }
                 possible_candidate_one_tx = dd(set)
-                # 1. 根据$\{F_d^1,F_d^2,...\},...,\{F_{ts}^1,F_{ts}^2,...\}$ 分别提取$\{V_d^1, V_d^2...\},...,\{V_{ts}^1,V_{ts}^2,...\}$
+                
                 all_candidates, map_of_values = _extract_all_values_by_candidates_in_one_trx(all_candidates, tx_instance)
                 
-                # 2. 分析$I$的asset flow，获得所有可能的 Dest, amount, Token，记为$\{D_i,A_i, T_i\}$
+                
                 tracer = TCE.get_tracer()
                 asset_flows = tracer.get_trace_common(chain, tx_hash, 'asset')
                 flag_tested_af = False
                 _valid_tx_cnt += 1
-                # 3. 缩小A/T的范围： 将这些$\{A_i, T_i\}$ 与 $\{V_A^1, V_A^2...\},\{V_T^1,V_T^2,...\}$ 相互比较，这里的$V_A^x, V_T^x$ 分别代表LLM给出的A和T的候选在这个transaction中所对应的Value，如果数值相等，则认为找到了一个有可能是正确的A/T
+                
                 for af in asset_flows:
                     af = ed(af)
                     af.value = TL.save_value_int(af.value)
@@ -736,16 +736,16 @@ class ExtractorLLM(Extractor):
                     if flag_tested_af:
                         possible_candidate[preset_key] = new_set
                 
-            # 这个步骤是将上面已经检验过的 Destination 作为跨链验证的根据，而不是用LLM给出的（因为这可能不太准确）                
+            
             if flag_tested_af: all_candidates[C.PRESET_KEYS_TO] = list(possible_candidate[C.PRESET_KEYS_TO])
             # all_candidates, map_of_values = _extract_all_values_by_candidates_in_one_trx(all_candidates, tx_instance)
             addtional_tx = list(new_bridge_data[chain][role][meta_structure].keys())
             for tx_hash in addtional_tx[:min(100, len(addtional_tx))]:
                 tx_instance = new_bridge_data[chain][role][meta_structure][tx_hash]
-                # ! 这个地方注意，tx_instance 已经改变！
+                
                 _, map_of_values = _extract_all_values_by_candidates_in_one_trx(all_candidates, tx_instance)
                 flag_tested_src_trx = False
-                # 4. 根据 $\{F_c^1,F_c^2,...\}$ 到源链上寻找位于 $\{F_{ts}^1,F_{ts}^2,...\}$一定时间窗口内的交易，
+                
                 for (Cidx, CHAIN), (Didx, Dest_in_dst), (TsIdx, Ts) in itertools.product(
                         enumerate(map_of_values[C.PRESET_KEYS_CHAIN]), enumerate(map_of_values[C.PRESET_KEYS_TO]), enumerate(map_of_values[C.PRESET_KEYS_TIMESTAMP])):
                     src_chain_name = DOC.chain_id_to_name[C.current_bridge].get(CHAIN, '')
@@ -754,12 +754,12 @@ class ExtractorLLM(Extractor):
 
                     src_trxs = filter_bridge_data_by_role_and_ts(new_bridge_data, src_chain_name, 'src', Ts, C.HYPERPARAMETER_TIME_WINDOW, reverse=True)
                     for src_trx in src_trxs:
-                        # 4.1 提取$\{V_d^1, V_d^2...\},...,\{V_{ts}^1,V_{ts}^2,...\}$ （目标链上的）
+                        
                         flag_tested_src_trx = True
                         _meta_struct = self._get_dependable_meta_structure(src_chain_name, src_trx[0], src_trx[1:])
                         candidate_of_this_src_trx = self.final_chosen_keys[chain]['src'][_meta_struct] or _pack_all_candidates_to_dict(self.voting_keys[src_chain_name]['src'][_meta_struct])
                         _, map_of_dst_values = _extract_all_values_by_candidates_in_one_trx(candidate_of_this_src_trx, src_trx)
-                        # 4.2 将源链与目标链上的 $V_{Di}$ 进行比较，筛选D
+                        
                         for a in map_of_dst_values[C.PRESET_KEYS_TO]:
                             if not isinstance(a, (str, bytes)) or not isinstance(Dest_in_dst, (str, bytes)): continue
                             if a.lower() != Dest_in_dst.lower(): continue 
@@ -782,14 +782,14 @@ class ExtractorLLM(Extractor):
                 tx_instance = new_bridge_data[chain][role][meta_structure][tx_hash]
                 map_of_values = { k:[] for k in C.PRESET_KEYS }
                 possible_candidate_one_tx = dd(set)
-                # 1. 根据$\{F_d^1,F_d^2,...\},...,\{F_{ts}^1,F_{ts}^2,...\}$ 分别提取$\{V_d^1, V_d^2...\},...,\{V_{ts}^1,V_{ts}^2,...\}$
+                
                 all_candidates, map_of_values = _extract_all_values_by_candidates_in_one_trx(all_candidates, tx_instance)
                 
-                # 2. 分析$I$的asset flow，获得所有可能的amount, Token，记为$\{A_i, T_i\}$
+                
                 tracer = TCE.get_tracer()
                 asset_flows = tracer.get_trace_common(chain, tx_hash, 'asset')
                 flag_tested_af = False
-                # 3. 缩小A/T的范围： 将这些$\{A_i, T_i\}$ 与 $\{V_A^1, V_A^2...\},\{V_T^1,V_T^2,...\}$ 相互比较，这里的$V_A^x, V_T^x$ 分别代表LLM给出的A和T的候选在这个transaction中所对应的Value，如果数值相等，则认为找到了一个有可能是正确的A/T
+                
                 for af in asset_flows:
                     af = ed(af)
                     af.value = TL.save_value_int(af.value)
@@ -821,10 +821,10 @@ class ExtractorLLM(Extractor):
             addtional_tx = list(new_bridge_data[chain][role][meta_structure].keys())
             for tx_hash in addtional_tx[:min(100, len(addtional_tx))]:
                 tx_instance = new_bridge_data[chain][role][meta_structure][tx_hash]
-                # ! 这个地方需要注意，tx_instance 已经被改变了！！
+                
                 _, map_of_values = _extract_all_values_by_candidates_in_one_trx(all_candidates, tx_instance)
                 flag_tested_dst_trx = False
-                # 4. 根据 $\{F_c^1,F_c^2,...\}$ 到目标链上寻找位于 $\{F_{ts}^1,F_{ts}^2,...\}$一定时间窗口内的交易，
+                
                 for (Cidx, CHAIN), (Didx, Dest_in_src), (TsIdx, Ts) in itertools.product(
                         enumerate(map_of_values[C.PRESET_KEYS_CHAIN]), enumerate(map_of_values[C.PRESET_KEYS_TO]), enumerate(map_of_values[C.PRESET_KEYS_TIMESTAMP])):
                     dest_chain_name = DOC.chain_id_to_name[C.current_bridge].get(CHAIN, '')
@@ -833,11 +833,11 @@ class ExtractorLLM(Extractor):
 
                     dst_trxs = filter_bridge_data_by_role_and_ts(new_bridge_data, dest_chain_name, 'dst', Ts, C.HYPERPARAMETER_TIME_WINDOW)
                     for dst_trx in dst_trxs:
-                        # 4.1 提取$\{V_d^1, V_d^2...\},...,\{V_{ts}^1,V_{ts}^2,...\}$ （目标链上的）
+                        
                         flag_tested_dst_trx = True
                         _meta_struct = self._get_dependable_meta_structure(dest_chain_name, dst_trx[0], dst_trx[1:])
                         _, map_of_dst_values = _extract_all_values_by_candidates_in_one_trx(_pack_all_candidates_to_dict(self.voting_keys[dest_chain_name]['dst'][_meta_struct]), dst_trx)
-                        # 4.2 将源链与目标链上的 $V_{Di}$ 进行比较，筛选D
+                        
                         for a in map_of_dst_values[C.PRESET_KEYS_TO]:
                             if not isinstance(a, (str, bytes)) or not isinstance(Dest_in_src, (str, bytes)): continue
                             if a.lower() != Dest_in_src.lower(): continue 
@@ -865,7 +865,7 @@ class ExtractorLLM(Extractor):
                 for _k in self.voting_keys[chain][role][meta_structure]:
                     num_within_one_meta *= len(self.voting_keys[chain][role][meta_structure][_k])
                 num_of_filter2 += num_within_one_meta
-                # 从一个类别中随机拿一个
+                
                 tx_instance = list(new_bridge_data[chain][role][meta_structure].values())[0]
                 flatten_keys = _get_meta_structure(tx_instance[0], tx_instance[1:], False, [], False)
                 L = len(flatten_keys)

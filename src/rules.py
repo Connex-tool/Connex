@@ -16,14 +16,14 @@ def get_rules() -> T.List[T.Callable[[T.Any, T.Any], bool]]:
         return tx1.to.lower() == tx2.to.lower()
 
     def rule2_timestamp(tx1, tx2, **kwargs):
-        # return True # 暂时不管timestamp，看数据是怎样的
+        
         timewindow = kwargs.get('timewindow', None) or C.HYPERPARAMETER_TIME_WINDOW
         if not (tx2.timestamp) or not (tx1.timestamp): 
             return False
         if isinstance(tx2.timestamp, str) and isinstance(tx1.timestamp, str) and not (len(tx2.timestamp) and len(tx1.timestamp) ): 
             return False
         time_diff = TL.save_value_int(tx2.timestamp) - TL.save_value_int(tx1.timestamp)
-        return time_diff >= 0 and time_diff < timewindow # tx2晚于tx1，且时间差有限
+        return time_diff >= 0 and time_diff < timewindow 
 
     def rule3_token_name(tx1, tx2, **kwargs):
         if TL.check_whether_token_name_and_symbol_match(tx1.token_name, tx1.token_symbol, tx2.token_name, tx2.token_symbol):
@@ -91,15 +91,15 @@ def deal_additional_pairs(pairs:T.List[T.Tuple[str, str]], txhash2ts):
     ahead_star = get_ahead_star(pairs)
     cur_pair_res = []
     for src_hash in ahead_star:
-        # 选择时间戳里最接近的一个
+        
         if len(ahead_star[src_hash]) == 1: 
-            # 只有一个候选
+            
             cur_pair_res.append((src_hash, ahead_star[src_hash][0]))
         else:
             a = sorted(ahead_star[src_hash], 
                     key=lambda x: _calc_timesteamp_diff(txhash2ts[src_hash],txhash2ts[x]) )
             if txhash2ts[a[0]] < txhash2ts[src_hash]:
-                # 最近的一个也是早于src，说明都没匹配上
+                
                 assert all (txhash2ts[_x] < txhash2ts[src_hash] for _x in ahead_star[src_hash] )
                 # fail_pair_res[src_chain][dst_chain].append(
                 #     (src_hash, txhash2ts[src_hash], txhash2ts[a[0]])

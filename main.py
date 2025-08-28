@@ -44,7 +44,6 @@ def _decode_fields(tx_data:T.List[T.Dict], chain: str,
     return ret
 
 def generate_decoded_kv(use_log:bool=False):
-    """将raw data 解码成KV对的形式"""
 
     print('---decode begin---')
     logging.info('---decode begin---')
@@ -295,7 +294,7 @@ def main(args):
 
     os.makedirs(C.paths().bridge_results, exist_ok=True)
     if args.phase in ('all', 'decode'):
-        # 将raw data解码成 K-V 形式
+        
         generate_decoded_kv(True)
         
     if args.phase == 'all' or args.phase == 'extract':

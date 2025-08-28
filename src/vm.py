@@ -113,7 +113,7 @@ class Memory:
         return ret 
 
     def load(self, pos, length=32):
-        # ! EVM 是大端序： https://calnix.gitbook.io/eth-dev/evm-storage-opcodes/evm
+        
         length = self.save_value_int(length)
         pos = self.save_value_int(pos)
         if length <= self.WORD_LEN: 

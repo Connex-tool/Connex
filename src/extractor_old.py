@@ -139,7 +139,7 @@ class ExtractorRule(Extractor):
         """
         w3 = self.choose_one_rpc(chain)
         tx_obj = ed(tx_obj)
-        # 抽取信息
+        
         extracted_infos = self.extract_by_rule(tx_obj, logs_dict, extract_rules)
 
         to, token_addr, amount, timeStamp, role, = (

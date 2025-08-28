@@ -171,7 +171,7 @@ def _download_abi(addr:str, chain:str)->T.Tuple[int, str]:
 
 def download_abi(addr:str, chain:str)->str:
     status, abi = _download_abi(addr, chain)
-    try_times = 3 # 失败重试3次
+    try_times = 3 
     while status == -1 and try_times > 0:
         time.sleep(5-try_times)
         status, abi = _download_abi(addr, chain)
@@ -354,10 +354,10 @@ def get_token_name_symbol_decimals(addr:str, chain:str, w3:Web3=None)->T.Tuple[s
         return 'eth', 'eth', 18
     name, symbol, decimals = _get_token_name_symbol_decimals_from_local_cache(addr, chain)
     if decimals == -1 and not C.force_reload: 
-        # 如果是-1 说明之前已经查过这个Token，它不是Token, 不用浪费时间查了
+        
         return "", "", 0
     if not len(name) and (decimals == 0 or (decimals == -1 and C.force_reload)):
-        # decimal 是0, 不在DB里. 查询; 或者是-1，代表之前查过，但是强制重新加载
+        
         name, symbol, decimals = _get_token_name_symbol_decimals_from_web(addr, chain, w3)
         token_info = {
             'name': name ,
@@ -690,8 +690,8 @@ def extract_values_by_given_fields(tx:T.Dict[str, T.Any], log:T.List[T.Dict[str,
             if idx.isdigit():
                 obj = log[int(idx)]
             else:
-                # 可以按index选择log，也可以按照event名字选择log
-                # 如果有2个以上的方括号，就代表有多个同名log
+                
+                
                 cnt_of_bracket = idx.count('[')
                 index_of_log_wanted = -1
                 if cnt_of_bracket == 2:
@@ -714,7 +714,7 @@ def extract_values_by_given_fields(tx:T.Dict[str, T.Any], log:T.List[T.Dict[str,
                             obj = _log 
                             break
         else:
-            # 如果规则既没有指定transaction也没有指定log，就直接返回预设值
+            
             return ps[0] if not strict_mode else None
         if obj is None:
             return None
@@ -722,7 +722,7 @@ def extract_values_by_given_fields(tx:T.Dict[str, T.Any], log:T.List[T.Dict[str,
         for p in ps[1:]:
             nextcur = cur.get(p, None) or _get_dict_value_ignore_case(cur, p)
             if nextcur is None: 
-                # 如果路径唯一，则遍历找到它
+                
                 traversed = BFS(cur, lambda x: x.values() if isinstance(x, dict) else [], lambda x: isinstance(x, dict) and p in x)
                 cur = traversed[p] if traversed else None
             else:
@@ -743,7 +743,7 @@ def extract_values_by_given_fields(tx:T.Dict[str, T.Any], log:T.List[T.Dict[str,
                     ret[key] = extracted_fields 
                     break
         elif isinstance(r[key], dict):
-            # 如果是一个dict，则该dict的每一个键是函数名，每一个值是对应的规则
+            
             fn = tx['pureFunctionName']
             cur_rules = r[key][fn]
             for cr in cur_rules:
@@ -788,9 +788,9 @@ def pure_json_object(content:str, return_str:bool=False, fast_judge:bool=True):
                 else: return json.loads(ret)
 
 def md5_encryption(data):
-    md5 = hashlib.md5()  # 创建一个md5对象
-    md5.update(data.encode('utf-8'))  # 使用utf-8编码数据
-    return md5.hexdigest()  # 返回加密后的十六进制字符串
+    md5 = hashlib.md5()  
+    md5.update(data.encode('utf-8'))  
+    return md5.hexdigest()  
 
 def save_value_int(v):
     if isinstance(v, str):
@@ -926,10 +926,10 @@ def copy_dict_to_nested_defaultdict(d1: dict, d2: dd) -> None:
     """
     for key, value in d1.items():
         if isinstance(value, dict):
-            # 如果值是字典，则递归调用自身来处理嵌套
+            
             copy_dict_to_nested_defaultdict(value, d2[key])
         else:
-            # 如果值不是字典，则直接赋值
+            
             d2[key] = value
 
 
@@ -1032,9 +1032,9 @@ def find_n_keys_with_max_values(d: T.Dict[T.Any, int], n: int) -> T.List[T.Any]:
     """
     if n <= 0:
       return []
-    # 将字典的项（键值对）转换为列表，并按值降序排序
+    
     sorted_items = sorted(d.items(), key=lambda item: item[1], reverse=True)
-    # 从排序后的列表中提取前 n 个键
+    
     top_n_keys = [item[0] for item in sorted_items[:min(n, len(sorted_items))]]    
     return top_n_keys
 
