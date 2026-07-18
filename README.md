@@ -1,3 +1,3 @@
 # Connex
 
-GitHub limits large folder, please download and unzip data/ and results/ directory from google drive: [data.zip](https://drive.google.com/file/d/1PZ4qVddUYbETKI5KU8GktMrNGBwBXACM/view?usp=sharing) , [results.zip](https://drive.google.com/file/d/1hrycU9DUYGOV7Y5iqRnVilE8RUxgUlFH/view?usp=sharing)
+GitHub limits large folder, please download and unzip data/ and results/ directory from [osf](https://osf.io/4hfc6/overview?view_only=700f8e0cfe834169b3d49dc826691b06)

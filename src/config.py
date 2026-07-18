@@ -19,7 +19,7 @@ from easydict import EasyDict as ed
 # chains_to_pair = ['Ethereum', 'BSC', 'Avalanche', 'Polygon', 'Fantom']
 
 
-# done by lixiao
+# done by 
 date_after = '2024-3-1'
 date_before = '2024-3-11'
 # date_after = '2024-3-1'
